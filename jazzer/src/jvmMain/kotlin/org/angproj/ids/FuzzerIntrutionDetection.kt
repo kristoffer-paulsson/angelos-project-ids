@@ -12,44 +12,61 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.sec
+package org.angproj.ids
 
 import com.code_intelligence.jazzer.Jazzer
 import com.code_intelligence.jazzer.api.FuzzedDataProvider
-import org.angproj.sec.rand.AbstractSponge256
-import kotlin.test.assertNotEquals
+import kotlin.jvm.javaClass
 import kotlin.test.assertTrue
 
 
-public object FuzzerSponge256Kt : FuzzPrefs() {
+public object FuzzerIntrutionDetectionKt {
 
-    public class Sponge256 : AbstractSponge256(), SpongeImpl {}
+    public val ids : IntrutionDetection = object : IntrutionDetection {
+
+        private var monitoring: Boolean = false
+
+        override fun startMonitoring(): Boolean {
+            monitoring = true
+            return true
+        }
+
+        override fun stopMonitoring(): Int {
+            monitoring = false
+            return 0
+        }
+
+        override fun isMonitoring(): Boolean {
+            return monitoring
+        }
+    }
+
+    init {
+        ids.startMonitoring()
+    }
 
 
     @JvmStatic
     public fun fuzzerTestOneInput(data: FuzzedDataProvider) {
-        val sponge = Sponge256()
 
-        var buffer1 = ByteArray(32)
-        var buffer2 = ByteArray(32)
+        val buffer = ByteArray(32)
 
         try {
-            sponge.reseed(data.consumeBytes(128))
-            buffer1 = sponge.digest()
-            sponge.round()
-            buffer2 = sponge.digest()
+            // TODO("Implement actual fuzzing of IDS, implement doable hack and intrution simulation")
         } catch (_: Exception) {
-            assertTrue(false)
+            assertTrue(ids.isMonitoring())
         }
 
-        assertNotEquals(buffer1.toList(), buffer2.toList())
+        assertTrue(ids.isMonitoring())
     }
 
     @JvmStatic
     public fun main(args: Array<String>) {
-        Jazzer.main(arrayOf(
-            "--target_class=${javaClass.name}",
-            "-max_total_time=${maxTotalTime}"
-        ))
+        Jazzer.main(
+            arrayOf(
+                "--target_class=${javaClass.name}",
+                "-max_total_time=${120}"
+            )
+        )
     }
 }

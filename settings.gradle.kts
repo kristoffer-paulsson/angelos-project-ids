@@ -1,4 +1,4 @@
-rootProject.name = "angelos_project_ids"
+rootProject.name = "angelos-project-ids"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -32,4 +32,5 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-include(":composeApp")
+include(":library")
+include(":jazzer")
